@@ -26,6 +26,8 @@ services:
       - ./mysql_data/mariadb.cnf:/etc/mysql/mariadb.cnf
       - ./mysql_data:/var/lib/mysql
       - /etc/localtime:/etc/localtime:ro
+    networks:
+      - db-network
 
   # Reactmap - Map fronted
   # Default container port 8080. We expose it through port 6001 but with a
@@ -44,7 +46,9 @@ services:
       - ./reactmap/env:/home/node/.env
     ports:
       - 6001:8080
-
+    networks:
+      - db-network
+      
   # Dragonite Scanner
   # Default container port is 7272 which is not exposed. It is only used
   # internally by other containers
@@ -96,6 +100,8 @@ services:
       - ./unown/golbat_config.toml:/golbat/config.toml
       - ./unown/golbat_cache:/golbat/cache
       - ./unown/logs:/golbat/logs
+    networks:
+      - db-network
 
   # Rotom Device Manager
   # Default container ports are 7070,7071,7072. We will only expose
@@ -134,6 +140,8 @@ services:
       KOJI_SECRET: ${KOJI_SECRET}
     ports:
       - 6004:8080
+    networks:
+      - db-network
 
   # PhpMyAdmin to access all our databases through a web interface
   # Default container port is 80. By default we expose it to 6005
@@ -152,6 +160,8 @@ services:
       UPLOAD_LIMIT: 600M
     ports:
       - 6005:80
+    networks:
+      - db-network
 
   # VictoriaMetrics Agent to scrape data from all services and send them to victoria metrics
   # default container port is 8429 but we don't need to expose it at all for a local setup
@@ -208,3 +218,5 @@ services:
 networks:
   mapping_network:
     driver: bridge
+  db-network:
+    external: true
